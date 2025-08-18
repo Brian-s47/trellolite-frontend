@@ -37,4 +37,14 @@ http://localhost:3000
 ---
 **🔗 Repos relacionados**
 
-- Backend - TrelloLite
+- Backend - TrelloLite <https://github.com/Brian-s47/TrelloLite-backend>
+
+## 🖼️ Layout base
+
+Se configuró el `RootLayout` en Next.js para que toda la aplicación tenga:
+
+- **Header fijo** con AppBar de Material UI.
+- **Main dinámico** donde se renderizan las páginas.
+- **Footer fijo** con información del proyecto.
+
+Esto asegura consistencia visual y prepara la app para integrar las vistas de usuarios, tableros y tareas.
