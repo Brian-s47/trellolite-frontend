@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🎨 TrelloLite - Frontend
 
-## Getting Started
+**TrelloLite-frontend** es la interfaz web del proyecto **TrelloLite**, una aplicación tipo Trello simplificada para la gestión de tareas en equipos pequeños.  
+Este frontend está construido con **Next.js**, **TailwindCSS** y **Material UI**, y se conecta a la API desarrollada en el repositorio [TrelloLite-backend](https://github.com/Brian-s47/TrelloLite-backend).
 
-First, run the development server:
+---
 
+## ⚙️ Tecnologías usadas
+
+- [Next.js](https://nextjs.org/) - Framework React para frontend moderno
+- [React](https://reactjs.org/) - Librería para construir interfaces
+- [TailwindCSS](https://tailwindcss.com/) - Estilos utilitarios
+- [Material UI](https://mui.com/) - Componentes preconstruidos y accesibles
+- [Git & GitHub](https://github.com/) - Control de versiones
+
+---
+
+## 📦 Instalación
+
+1. Clonar el repositorio:
+```bash
+git clone <https://github.com/Brian-s47/TrelloLite-frontend>
+cd TrelloLite-frontend
+```
+2. Instalar dependencias:
+```bash
+npm install
+```
+3. Ejecutar en modo desarrollo:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+4. Abrir en el navegador:
+```bash
+http://localhost:3000
+```
+---
+**🔗 Repos relacionados**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Backend - TrelloLite
