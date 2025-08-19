@@ -1,5 +1,5 @@
 // zona de importacion de modulos
-import UsersPage from "../../components/usuarios/UsersPage"; // Importamos componenete de pa pagina de Usuarios
+import UsersPage from "../components/usuarios/UsersPage.jsx"; // Importamos componenete de pa pagina de Usuarios "../../components/usuarios/UsersPage.jsx"
 
 // Metadatos de la pagina para Next (SEO, título)
 export const metadata = {

@@ -1,7 +1,8 @@
 "use client"; //Indicamos a Next que este archivo se renderiza en el cliente
 
 import { useEffect, useState } from "react"; // Hooks de React
-import { api } from "../../lib/api"; // helper HTTP
+import { api } from "../../../lib/api.js"; // helper HTTP "../../lib/api"
+import { useRouter } from "next/navigation";
 import { Card, CardContent, TextField, Button, Table, TableHead, TableRow, TableCell, TableBody, Alert, CircularProgress, Stack, Typography } from "@mui/material"; // Componentes de Material UI
 /// Componente principal de la pantalla de Usuarios.
 export default function UsersPage() {
@@ -57,6 +58,7 @@ export default function UsersPage() {
         }
     }
     // Si todo sale bien retornoamos el componente creado
+    const router = useRouter();
     return (
     <div className="max-w-5xl mx-auto space-y-6">
         <Typography variant="h5" component="h1">Usuarios</Typography>
@@ -105,23 +107,28 @@ export default function UsersPage() {
                     <TableCell>Nombre</TableCell>
                     <TableCell>Email</TableCell>
                     <TableCell>Creado</TableCell>
+                    <TableCell>Acciones</TableCell> 
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {users.map((u) => (
-                    <TableRow key={u._id}>
+                        <TableRow key={u._id}>
                         <TableCell>{u.nombre}</TableCell>
                         <TableCell>{u.email}</TableCell>
                         <TableCell>
-                        {u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}
+                            {u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}
                         </TableCell>
-                    </TableRow>
+                        <TableCell>
+                            <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => router.push(`/tableros?userId=${u._id}`)}
+                            >
+                            Ver Tableros
+                            </Button>
+                        </TableCell>
+                        </TableRow>
                     ))}
-                    {users.length === 0 && (
-                    <TableRow>
-                        <TableCell colSpan={3}>Sin usuarios aún.</TableCell>
-                    </TableRow>
-                    )}
                 </TableBody>
                 </Table>
             </>
