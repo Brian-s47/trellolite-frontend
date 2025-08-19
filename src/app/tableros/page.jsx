@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { api } from "../../lib/api.js"; // tu helper HTTP
@@ -28,6 +29,8 @@ export default function TablerosPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState(null);
+  const router = useRouter();
+
 
   // Form state
   const [nombre, setNombre] = useState("");
@@ -162,27 +165,30 @@ export default function TablerosPage() {
                   <TableCell>Descripción</TableCell>
                   <TableCell>Miembros</TableCell>
                   <TableCell>Creado</TableCell>
+                  <TableCell>Acciones</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {boards.map((b) => (
-                  <TableRow key={b._id}>
-                    <TableCell>{b.nombre}</TableCell>
-                    <TableCell>{b.descripcion}</TableCell>
-                    <TableCell>{b.miembros?.length || 0}</TableCell>
-                    <TableCell>
-                      {b.createdAt
-                        ? new Date(b.createdAt).toLocaleString()
-                        : "-"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {boards.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={4}>Sin tableros aún.</TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
+              {boards.map((b) => (
+                <TableRow key={b._id}>
+                  <TableCell>{b.nombre}</TableCell>
+                  <TableCell>{b.descripcion}</TableCell>
+                  <TableCell>{b.miembros?.length || 0}</TableCell>
+                  <TableCell>
+                    {b.createdAt ? new Date(b.createdAt).toLocaleString() : "-"}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => router.push(`/tableros/${b._id}`)}
+                    >
+                      Ver Tareas
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
             </Table>
           )}
         </CardContent>
