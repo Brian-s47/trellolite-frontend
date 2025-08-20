@@ -96,6 +96,21 @@ export default function TareasPage() {
     }
   }
 
+  async function cambiarEstado(tarea) {
+  try {
+    let nuevoEstado;
+    if (tarea.estado === "pendiente") nuevoEstado = "en_progreso";
+    else if (tarea.estado === "en_progreso") nuevoEstado = "completada";
+    else return; // si ya está completada, no hace nada
+
+    await api.patch(`/tareas/${tarea._id}/estado`, { estado: nuevoEstado });
+    await loadData(); // recargar tareas
+  } catch (e) {
+    setErr(e.message);
+  }
+}
+
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <Typography variant="h5" component="h1">
@@ -174,6 +189,7 @@ export default function TareasPage() {
                   <TableCell>Responsable</TableCell>
                   <TableCell>Estado</TableCell>
                   <TableCell>Fecha Límite</TableCell>
+                  <TableCell>Acciones</TableCell>
                 </TableRow>
               </TableHead>
             <TableBody>
@@ -185,6 +201,17 @@ export default function TareasPage() {
                     {users.find((u) => u._id === t.responsableId)?.nombre || t.responsableId}
                     </TableCell>
                     <TableCell>{t.estado}</TableCell>
+                    <TableCell>
+                      {t.estado !== "completada" && (
+                        <Button
+                          size="small"
+                          variant="contained"
+                          onClick={() => cambiarEstado(t)}
+                        >
+                          {t.estado === "pendiente" ? "Iniciar" : "Completar"}
+                        </Button>
+                      )}
+                    </TableCell>
                     <TableCell>
                         {t.fechaLimite
                         ? new Date(t.fechaLimite).toLocaleDateString()

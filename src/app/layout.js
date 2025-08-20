@@ -1,6 +1,7 @@
 // Zona de importacion de modulos
 import "./globals.css"; // Importacion de estilos globales -> se definieron con "TailwindCSS"
 import { AppBar, Toolbar, Typography } from "@mui/material"; // Componentes de Material UI -> barra superior (AppBar), su contenedor interno (Toolbar) y el texto estilizado (Typography)
+import Link from "next/link";
 
 // Definicion de información -> (título y descripción)
 export const metadata = {
@@ -20,9 +21,15 @@ export default function RootLayout({ children }) { // { children } → Prop espe
         {/* Header fijo */}
         <AppBar position="static"> {/* Barra de navegacion Fija -> Fija superir sin scroll para contrario seria: "fixed" */}
           <Toolbar> {/* Asegura que el contenido dentro tenga espaciado y alineación adecuada. */}
-            <Typography variant="h6" component="div"> {/* Muestra el texto "TrelloLite" con estilo h6 (un heading pequeño)*/}
-              TrelloLite
-            </Typography> 
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ cursor: "pointer" }}
+        >
+          <Link href="/" className="text-white no-underline">
+            TrelloLite
+          </Link>
+        </Typography>
           </Toolbar>
         </AppBar>
 
