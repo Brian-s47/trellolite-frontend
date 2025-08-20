@@ -1,8 +1,7 @@
 "use client";
-
-import { useEffect, useState } from "react"; // Hooks de React
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "../../lib/api.js"; // helper HTTP (ajusta la ruta si tu api.js está en otro sitio)
+import { api } from "../../lib/api.js";
 import {
   Card,
   CardContent,
@@ -19,7 +18,6 @@ import {
   Typography,
 } from "@mui/material";
 
-// Componente principal de la pantalla de Usuarios.
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [meta, setMeta] = useState(null);
@@ -27,12 +25,10 @@ export default function UsersPage() {
   const [err, setErr] = useState(null);
   const router = useRouter();
 
-  // Estados del formulario
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // Cargar usuarios
   async function loadUsers() {
     try {
       setLoading(true);
@@ -51,7 +47,6 @@ export default function UsersPage() {
     loadUsers();
   }, []);
 
-  // Crear usuario
   async function onCreateUser(e) {
     e.preventDefault();
     try {
@@ -79,12 +74,12 @@ export default function UsersPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <Typography variant="h5" component="h1">
+      <Typography variant="h5" component="h1" className="text-blue-700 font-bold">
         Usuarios
       </Typography>
 
-      {/* Formulario de creación */}
-      <Card>
+      {/* Formulario */}
+      <Card className="shadow-md rounded-lg">
         <CardContent>
           <form onSubmit={onCreateUser} className="flex flex-col md:flex-row gap-4">
             <TextField
@@ -100,7 +95,12 @@ export default function UsersPage() {
               onChange={(e) => setEmail(e.target.value)}
               fullWidth
             />
-            <Button type="submit" variant="contained" disabled={saving}>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ backgroundColor: "#1e40af", ":hover": { backgroundColor: "#1e3a8a" } }}
+              disabled={saving}
+            >
               {saving ? "Guardando..." : "Crear"}
             </Button>
           </form>
@@ -108,8 +108,8 @@ export default function UsersPage() {
         </CardContent>
       </Card>
 
-      {/* Tabla de usuarios */}
-      <Card>
+      {/* Tabla */}
+      <Card className="shadow-md rounded-lg">
         <CardContent>
           {loading ? (
             <Stack direction="row" alignItems="center" gap={2}>
@@ -122,7 +122,7 @@ export default function UsersPage() {
                 {meta?.total != null ? `Total: ${meta.total}` : null}
               </div>
               <Table size="small">
-                <TableHead>
+                <TableHead sx={{ backgroundColor: "#f1f5f9" }}>
                   <TableRow>
                     <TableCell>Nombre</TableCell>
                     <TableCell>Email</TableCell>
@@ -132,26 +132,29 @@ export default function UsersPage() {
                 </TableHead>
                 <TableBody>
                   {users.map((u) => (
-                    <TableRow key={u._id}>
-                    <TableCell>{u.nombre}</TableCell>
-                    <TableCell>{u.email}</TableCell>
-                    <TableCell>
+                    <TableRow key={u._id} hover>
+                      <TableCell>{u.nombre}</TableCell>
+                      <TableCell>{u.email}</TableCell>
+                      <TableCell>
                         {u.createdAt ? new Date(u.createdAt).toLocaleString() : "-"}
-                    </TableCell>
-                    <TableCell>
+                      </TableCell>
+                      <TableCell>
                         <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() => router.push(`/tableros?userId=${u._id}`)}
+                          variant="outlined"
+                          size="small"
+                          sx={{ borderColor: "#1e40af", color: "#1e40af", ":hover": { backgroundColor: "#eff6ff" } }}
+                          onClick={() => router.push(`/tableros?userId=${u._id}`)}
                         >
-                        Ver Tableros
+                          Ver Tableros
                         </Button>
-                    </TableCell>
+                      </TableCell>
                     </TableRow>
                   ))}
                   {users.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={3}>Sin usuarios aún.</TableCell>
+                      <TableCell colSpan={4} align="center">
+                        Sin usuarios aún.
+                      </TableCell>
                     </TableRow>
                   )}
                 </TableBody>

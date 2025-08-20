@@ -23,33 +23,25 @@ import {
 } from "@mui/material";
 
 export default function TareasPage() {
-  const { id: boardId } = useParams(); // viene de la ruta /tableros/[id]
-  const [board, setBoard] = useState(null);
-  const [tareas, setTareas] = useState([]);
+  const { id } = useParams();
+  const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState(null);
-  const [users, setUsers] = useState([]);
 
-
-  // form
   const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [fechaLimite, setFechaLimite] = useState("");
   const [responsable, setResponsable] = useState("");
 
-  // cargar tablero + tareas
   async function loadData() {
     try {
-        setLoading(true);
-        setErr(null);
-        const resUsers = await api.get("/usuarios");
-        setUsers(resUsers.data || []);
-        const resBoard = await api.get(`/tableros/${boardId}`);
-        const resTareas = await api.get("/tareas");
-        // filtramos solo las de este tablero
-        setBoard(resBoard.data);
-        setTareas((resTareas.data || []).filter((t) => t.boardId === boardId));
+      setLoading(true);
+      setErr(null);
+      const resTasks = await api.get(`/tareas?boardId=${id}`);
+      const resUsers = await api.get("/usuarios");
+      setTasks(resTasks.data || []);
+      setUsers(resUsers.data || []);
     } catch (e) {
       setErr(e.message);
     } finally {
@@ -59,17 +51,16 @@ export default function TareasPage() {
 
   useEffect(() => {
     loadData();
-  }, [boardId]);
+  }, [id]);
 
-  // crear tarea
   async function onCreateTask(e) {
     e.preventDefault();
     try {
       setSaving(true);
       setErr(null);
 
-      if (!titulo.trim() || !descripcion.trim() || !fechaLimite || !responsable) {
-        setErr("Todos los campos son requeridos");
+      if (!titulo.trim() || !responsable) {
+        setErr("Título y responsable son requeridos");
         setSaving(false);
         return;
       }
@@ -77,16 +68,13 @@ export default function TareasPage() {
       const payload = {
         titulo: titulo.trim(),
         descripcion: descripcion.trim(),
-        fechaLimite,
         responsableId: responsable,
-        boardId,
-        estado: "pendiente", // por defecto
+        boardId: id,
       };
 
       await api.post("/tareas", payload);
       setTitulo("");
       setDescripcion("");
-      setFechaLimite("");
       setResponsable("");
       await loadData();
     } catch (e) {
@@ -96,29 +84,23 @@ export default function TareasPage() {
     }
   }
 
-  async function cambiarEstado(tarea) {
-  try {
-    let nuevoEstado;
-    if (tarea.estado === "pendiente") nuevoEstado = "en_progreso";
-    else if (tarea.estado === "en_progreso") nuevoEstado = "completada";
-    else return; // si ya está completada, no hace nada
-
-    await api.patch(`/tareas/${tarea._id}/estado`, { estado: nuevoEstado });
-    await loadData(); // recargar tareas
-  } catch (e) {
-    setErr(e.message);
+  async function onChangeEstado(task, nextEstado) {
+    try {
+      await api.put(`/tareas/${task._id}`, { estado: nextEstado });
+      await loadData();
+    } catch (e) {
+      setErr(e.message);
+    }
   }
-}
-
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      <Typography variant="h5" component="h1">
-        Tareas del tablero: {board?.nombre}
+    <div className="max-w-6xl mx-auto space-y-6">
+      <Typography variant="h5" component="h1" className="text-blue-700 font-bold">
+        Tareas
       </Typography>
 
-      {/* Formulario de creación */}
-      <Card>
+      {/* Formulario */}
+      <Card className="shadow-md rounded-lg">
         <CardContent>
           <form onSubmit={onCreateTask} className="flex flex-col gap-4">
             <TextField
@@ -132,36 +114,27 @@ export default function TareasPage() {
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
               fullWidth
+              multiline
+              rows={2}
             />
-            <TextField
-              label="Fecha Límite"
-              type="date"
-              value={fechaLimite}
-              onChange={(e) => setFechaLimite(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-            />
-
-            {/* seleccionar responsable */}
             <FormControl fullWidth>
-            <InputLabel>Responsable</InputLabel>
-            <Select
+              <InputLabel>Responsable</InputLabel>
+              <Select
                 value={responsable}
                 onChange={(e) => setResponsable(e.target.value)}
-            >
-                {board?.miembros?.map((uid) => {
-                const user = users.find((u) => u._id === uid);
-                return (
-                    <MenuItem key={uid} value={uid}>
-                    {user ? user.nombre : uid} {/* 👈 si no encuentra, muestra el id */}
-                    </MenuItem>
-                );
-                })}
-            </Select>
+                label="Responsable"
+              >
+                {users.map((u) => (
+                  <MenuItem key={u._id} value={u._id}>
+                    {u.nombre}
+                  </MenuItem>
+                ))}
+              </Select>
             </FormControl>
             <Button
               type="submit"
               variant="contained"
+              sx={{ backgroundColor: "#1e40af", ":hover": { backgroundColor: "#1e3a8a" } }}
               disabled={saving}
               className="self-start"
             >
@@ -172,8 +145,8 @@ export default function TareasPage() {
         </CardContent>
       </Card>
 
-      {/* Lista de tareas */}
-      <Card>
+      {/* Lista */}
+      <Card className="shadow-md rounded-lg">
         <CardContent>
           {loading ? (
             <Stack direction="row" alignItems="center" gap={2}>
@@ -182,50 +155,62 @@ export default function TareasPage() {
             </Stack>
           ) : (
             <Table size="small">
-              <TableHead>
+              <TableHead sx={{ backgroundColor: "#f1f5f9" }}>
                 <TableRow>
                   <TableCell>Título</TableCell>
                   <TableCell>Descripción</TableCell>
                   <TableCell>Responsable</TableCell>
                   <TableCell>Estado</TableCell>
-                  <TableCell>Fecha Límite</TableCell>
+                  <TableCell>Creado</TableCell>
                   <TableCell>Acciones</TableCell>
                 </TableRow>
               </TableHead>
-            <TableBody>
-                {tareas.map((t) => (
-                    <TableRow key={t._id}>
+              <TableBody>
+                {tasks.map((t) => (
+                  <TableRow key={t._id} hover>
                     <TableCell>{t.titulo}</TableCell>
                     <TableCell>{t.descripcion}</TableCell>
                     <TableCell>
-                    {users.find((u) => u._id === t.responsableId)?.nombre || t.responsableId}
+                      {users.find((u) => u._id === t.responsableId)?.nombre || "-"}
                     </TableCell>
-                    <TableCell>{t.estado}</TableCell>
+                    <TableCell className="capitalize">{t.estado}</TableCell>
                     <TableCell>
-                      {t.estado !== "completada" && (
+                      {t.createdAt ? new Date(t.createdAt).toLocaleString() : "-"}
+                    </TableCell>
+                    <TableCell className="space-x-2">
+                      {t.estado === "pendiente" && (
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          onClick={() => onChangeEstado(t, "en_progreso")}
+                        >
+                          Iniciar
+                        </Button>
+                      )}
+                      {t.estado === "en_progreso" && (
                         <Button
                           size="small"
                           variant="contained"
-                          onClick={() => cambiarEstado(t)}
+                          sx={{ backgroundColor: "green", ":hover": { backgroundColor: "darkgreen" } }}
+                          onClick={() => onChangeEstado(t, "completada")}
                         >
-                          {t.estado === "pendiente" ? "Iniciar" : "Completar"}
+                          Completar
                         </Button>
                       )}
+                      {t.estado === "completada" && (
+                        <span className="text-green-700 font-semibold">✔ Finalizada</span>
+                      )}
                     </TableCell>
-                    <TableCell>
-                        {t.fechaLimite
-                        ? new Date(t.fechaLimite).toLocaleDateString()
-                        : "-"}
-                    </TableCell>
-                    </TableRow>
+                  </TableRow>
                 ))}
-
-                {tareas.length === 0 && (
-                    <TableRow>
-                    <TableCell colSpan={5}>Sin tareas aún.</TableCell>
-                    </TableRow>
+                {tasks.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} align="center">
+                      No hay tareas aún.
+                    </TableCell>
+                  </TableRow>
                 )}
-                </TableBody>
+              </TableBody>
             </Table>
           )}
         </CardContent>
